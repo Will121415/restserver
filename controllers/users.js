@@ -1,40 +1,68 @@
 const { request, response } = require('express');
+const bcrypt  = require('bcryptjs');
+
+const User = require('../models/user');
 
 
 
-const getUsers = (req = request, res = response ) => {
+const getUsers = async(req = request, res = response ) => {
 
-    const { q, page, limit } = req.query;
+    const { limit = 5, skip = 0 } = req.query;
 
-    res.json({ 
-        id: 1,
-        name: 'will',
-        age: 23,
-        q,
-        page,
-        limit
-    })
+    const query = { status: true };
+
+    const [ total, users ] = await Promise.all([
+        User.countDocuments(query),
+        User.find(query)
+        .skip( Number( skip ) )
+        .limit( Number( limit ) )
+    ]);
+
+    res.json({ total, users });
 }
 
-const saveUser = (req = request, res = response ) => {
+const saveUser = async(req = request, res = response ) => {
 
-    const { name, age } = req.body;
+    const { name, email, password, role } = req.body;
+
+    const user = new User({ name, email, password, role });
+    
+    //Encrypt Password
+    const salt = bcrypt.genSaltSync();
+    user.password = bcrypt.hashSync( password, salt );
+
+    
+    await user.save();
  
     res.json({ 
-        id: 1,
-        name,
-        age
+        user
     })
 }
 
-const deleteUser = (req = request, res = response) => {
+const deleteUser = async(req = request, res = response) => {
 
     const { id } = req.params;
 
-    res.json({
-        id,
-        msg: 'User deleted'
-    })
+    const user = await User.findByIdAndUpdate( id, { status: false } );
+
+    res.json(user);
 }
 
-module.exports = { getUsers, saveUser, deleteUser }
+const updateUser = async(req = request, res=  response) => {
+    
+    const { id } = req.params;
+    const { _id, password, google, email, ...user } = req.body;
+
+    if ( password ) {
+        //Encrypt Password
+        const salt = bcrypt.genSaltSync();
+        user.password = bcrypt.hashSync( password, salt );
+    }
+
+    const userUpdated = await User.findByIdAndUpdate( id, user );
+
+    res.json({userUpdated});
+    
+}
+
+module.exports = { getUsers, saveUser, deleteUser, updateUser}
