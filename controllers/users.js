@@ -42,10 +42,11 @@ const saveUser = async(req = request, res = response ) => {
 const deleteUser = async(req = request, res = response) => {
 
     const { id } = req.params;
+    const userAuthenticated = req.user;
 
     const user = await User.findByIdAndUpdate( id, { status: false } );
-
-    res.json(user);
+    
+    res.json({ user, userAuthenticated });
 }
 
 const updateUser = async(req = request, res=  response) => {

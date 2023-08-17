@@ -1,0 +1,26 @@
+### SAVE USER
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+    "name": "Test13",
+    "email": "test13@gmail.com",
+    "password": "123456",
+    "role": "USER_ROLE"
+}
+### GET USERS
+GET http://localhost:8080/api/users
+
+### DELETE USER
+DELETE http://localhost:8080/api/users/64c14394fd7c2141a61b793c
+Content-Type: application/json
+x-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NGRlNDI4ZGRmMGI0NWZlMGU2MmE0YWMiLCJpYXQiOjE2OTIyODc4ODEsImV4cCI6MTY5MjYzMzQ4MX0.peIBmO_ws5vap3VgWpLwXfVHY6XVqJzicIL-JdnS8d0
+
+### LOGIN
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "test13@gmail.com",
+    "password": "123456"
+}
